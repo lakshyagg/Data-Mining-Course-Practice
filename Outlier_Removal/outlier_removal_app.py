@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
-from scipy.stats import zscore
 
 st.title("Outlier Management Explorer")
 st.write(
@@ -97,11 +96,15 @@ series = df[selected_column].dropna()
 if method == "Z-score (3.0)":
     score_column_name = f"{selected_column}_z_score"
     mask = analysis_df[selected_column].notna()
+    zscore_input = analysis_df.loc[mask, selected_column].astype(float)
+    zscore_std = zscore_input.std(ddof=0)
 
-    analysis_df.loc[mask, score_column_name] = zscore(
-        analysis_df.loc[mask, selected_column],
-        nan_policy="omit"
-    )
+    if pd.isna(zscore_std) or zscore_std == 0:
+        analysis_df.loc[mask, score_column_name] = np.nan
+    else:
+        analysis_df.loc[mask, score_column_name] = (
+            zscore_input - zscore_input.mean()
+        ) / zscore_std
     analysis_df.loc[~mask, score_column_name] = np.nan
 
     analysis_df[flag_column_name] = analysis_df[score_column_name].abs() > 3.0
