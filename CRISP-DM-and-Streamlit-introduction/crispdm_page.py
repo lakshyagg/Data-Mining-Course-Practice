@@ -10,7 +10,7 @@ st.title("Introduction to Data Mining")
 left_column, right_column = st.columns([3, 2], gap="large", vertical_alignment="top")
 
 with right_column:
-    st.space("large")
+    st.space("xxlarge")
     st.image(
         str(IMAGE_DIR / "crisp-dm.svg"),
         width="stretch",
